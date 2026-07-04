@@ -72,36 +72,40 @@ func _build_background() -> void:
         sky.z_index = -9
         add_child(sky)
 
-        # Faint horizontal scan-line grid for a sci-fi HUD feel.
-        for i in range(24):
-                var line := ColorRect.new()
-                line.color = Color(Palette.LIGHT.r, Palette.LIGHT.g, Palette.LIGHT.b, 0.03)
-                line.size = Vector2(20000, 1)
-                line.position = Vector2(-2000, -1200 + i * 60)
-                line.z_index = -8
-                add_child(line)
+        _spawn_sun()
+        _spawn_clouds()
 
-        _spawn_ambient_motes()
+func _spawn_sun() -> void:
+        var sun := Polygon2D.new()
+        sun.color = Color(Palette.YELLOW.r, Palette.YELLOW.g, Palette.YELLOW.b, 0.9)
+        var pts := PackedVector2Array()
+        for i in range(20):
+                var a: float = TAU * float(i) / 20.0
+                pts.append(Vector2(cos(a), sin(a)) * 90.0)
+        sun.polygon = pts
+        sun.position = Vector2(300, -900)
+        sun.z_index = -9
+        add_child(sun)
 
-func _spawn_ambient_motes() -> void:
-        var motes := CPUParticles2D.new()
-        motes.z_index = -7
-        motes.position = Vector2(0, LevelGenerator.GROUND_Y - 300)
-        motes.emitting = true
-        motes.amount = 40
-        motes.lifetime = 8.0
-        motes.preprocess = 8.0
-        motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_BOX
-        motes.emission_box_extents = Vector3(4000, 500, 0)
-        motes.direction = Vector2(0, -1)
-        motes.spread = 180.0
-        motes.gravity = Vector2.ZERO
-        motes.initial_velocity_min = 4.0
-        motes.initial_velocity_max = 14.0
-        motes.scale_amount_min = 1.0
-        motes.scale_amount_max = 2.5
-        motes.color = Color(Palette.GREEN.r, Palette.GREEN.g, Palette.GREEN.b, 0.35)
-        add_child(motes)
+func _spawn_clouds() -> void:
+        var rng := RandomNumberGenerator.new()
+        rng.seed = 42
+        for i in range(18):
+                var cloud := Node2D.new()
+                cloud.position = Vector2(rng.randf_range(-1500, 6000), rng.randf_range(-1100, -500))
+                cloud.z_index = -8
+                add_child(cloud)
+                for j in range(3):
+                        var puff := Polygon2D.new()
+                        puff.color = Color(1, 1, 1, 0.85)
+                        var r: float = rng.randf_range(35, 60)
+                        var pts := PackedVector2Array()
+                        for k in range(14):
+                                var a: float = TAU * float(k) / 14.0
+                                pts.append(Vector2(cos(a), sin(a) * 0.8) * r)
+                        puff.polygon = pts
+                        puff.position = Vector2(j * 50.0 - 50.0, 0)
+                        cloud.add_child(puff)
 
 func _build_hub() -> void:
         hub_root = Node2D.new()
@@ -235,7 +239,7 @@ func _spawn_players() -> void:
                 player2 = CharacterBody2D.new()
                 player2.set_script(PLAYER_SCRIPT)
                 player2.player_index = 2
-                player2.body_color = Palette.GREEN
+                player2.body_color = Palette.ORANGE_DIM
                 add_child(player2)
 
         var spawn: Vector2 = level_info["spawn"]
