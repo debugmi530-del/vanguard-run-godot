@@ -1,0 +1,12 @@
+# Godot 4 editor / import cache
+.godot/
+*.import
+.import/
+
+# Build output
+build/
+installer/Output/
+
+# OS
+.DS_Store
+Thumbs.db
