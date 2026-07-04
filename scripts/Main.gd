@@ -48,11 +48,60 @@ func _ready() -> void:
 
 func _build_background() -> void:
         var bg := ColorRect.new()
-        bg.color = Palette.NEAR_BLACK
+        bg.color = Palette.BG_BOTTOM
         bg.size = Vector2(20000, 2000)
         bg.position = Vector2(-2000, -1200)
         bg.z_index = -10
         add_child(bg)
+
+        var grad := Gradient.new()
+        grad.set_color(0, Palette.BG_TOP)
+        grad.set_color(1, Palette.BG_BOTTOM)
+        var grad_tex := GradientTexture2D.new()
+        grad_tex.gradient = grad
+        grad_tex.fill = GradientTexture2D.FILL_LINEAR
+        grad_tex.fill_from = Vector2(0, 0)
+        grad_tex.fill_to = Vector2(0, 1)
+        grad_tex.width = 8
+        grad_tex.height = 512
+        var sky := TextureRect.new()
+        sky.texture = grad_tex
+        sky.stretch_mode = TextureRect.STRETCH_SCALE
+        sky.size = Vector2(20000, 1400)
+        sky.position = Vector2(-2000, -1200)
+        sky.z_index = -9
+        add_child(sky)
+
+        # Faint horizontal scan-line grid for a sci-fi HUD feel.
+        for i in range(24):
+                var line := ColorRect.new()
+                line.color = Color(Palette.LIGHT.r, Palette.LIGHT.g, Palette.LIGHT.b, 0.03)
+                line.size = Vector2(20000, 1)
+                line.position = Vector2(-2000, -1200 + i * 60)
+                line.z_index = -8
+                add_child(line)
+
+        _spawn_ambient_motes()
+
+func _spawn_ambient_motes() -> void:
+        var motes := CPUParticles2D.new()
+        motes.z_index = -7
+        motes.position = Vector2(0, LevelGenerator.GROUND_Y - 300)
+        motes.emitting = true
+        motes.amount = 40
+        motes.lifetime = 8.0
+        motes.preprocess = 8.0
+        motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_BOX
+        motes.emission_box_extents = Vector3(4000, 500, 0)
+        motes.direction = Vector2(0, -1)
+        motes.spread = 180.0
+        motes.gravity = Vector2.ZERO
+        motes.initial_velocity_min = 4.0
+        motes.initial_velocity_max = 14.0
+        motes.scale_amount_min = 1.0
+        motes.scale_amount_max = 2.5
+        motes.color = Color(Palette.GREEN.r, Palette.GREEN.g, Palette.GREEN.b, 0.35)
+        add_child(motes)
 
 func _build_hub() -> void:
         hub_root = Node2D.new()
@@ -91,7 +140,7 @@ func _build_hub() -> void:
                 _build_upgrade_block(def["key"], def["name"], Vector2(bx, LevelGenerator.GROUND_Y - 170))
 
 func _build_upgrade_block(key: String, label_text: String, pos: Vector2) -> void:
-        var block := Area2D.new()
+        var block := StaticBody2D.new()
         block.set_script(load("res://scripts/UpgradeBlock.gd"))
         block.upgrade_key = key
         block.position = pos
@@ -109,12 +158,20 @@ func _build_upgrade_block(key: String, label_text: String, pos: Vector2) -> void
         visual.color = Palette.MID
         block.add_child(visual)
 
+        var glow := ColorRect.new()
+        glow.size = Vector2(rect.size.x - 8, 4)
+        glow.position = Vector2(-glow.size.x / 2.0, -rect.size.y / 2.0 + 2)
+        glow.color = Palette.GREEN
+        block.add_child(glow)
+
         var mark := Label.new()
         mark.text = "?"
         mark.add_theme_color_override("font_color", Palette.ORANGE)
         mark.add_theme_font_size_override("font_size", 32)
         mark.position = Vector2(-8, -50)
         block.add_child(mark)
+
+        block.register_visual(visual, mark)
 
         var name_label := Label.new()
         name_label.text = label_text
