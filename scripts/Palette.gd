@@ -1,18 +1,23 @@
 extends RefCounted
 class_name Palette
 
-## Sci-fi grayscale palette (white -> black) plus green / red / orange accents.
+## Sci-fi grayscale palette (cool charcoal blue -> off-white) plus a softer
+## green / red / orange accent set, tuned to be easier on the eyes than raw
+## neon (Mass Effect 3 inspired HUD tones).
 
-const WHITE := Color("f5f6f7")
-const LIGHT := Color("c7cbce")
-const MID := Color("8b9095")
-const DARK := Color("35383c")
-const NEAR_BLACK := Color("0c0d0f")
-const BLACK := Color("050506")
+const WHITE := Color("eef1f3")
+const LIGHT := Color("b7bfc6")
+const MID := Color("6b7480")
+const DARK := Color("2a2f36")
+const NEAR_BLACK := Color("15181d")
+const BLACK := Color("0a0c0f")
 
-const GREEN := Color("39ff9a")
-const GREEN_DIM := Color("1f8f57")
-const RED := Color("ff3b3b")
-const RED_DIM := Color("8f1f1f")
-const ORANGE := Color("ff8a2b")
-const ORANGE_DIM := Color("8f4d18")
+const GREEN := Color("5be7c4")
+const GREEN_DIM := Color("2c8f79")
+const RED := Color("e0483e")
+const RED_DIM := Color("8a2c27")
+const ORANGE := Color("f2a65a")
+const ORANGE_DIM := Color("9c6a34")
+
+const BG_TOP := Color("1c2126")
+const BG_BOTTOM := Color("0b0d10")
