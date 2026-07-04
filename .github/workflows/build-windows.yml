@@ -1,0 +1,67 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+env:
+  GODOT_VERSION: 4.3.0
+  EXPORT_NAME: VanguardRun
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Godot editor
+        shell: bash
+        run: |
+          curl -L -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_win64.exe.zip"
+          unzip -o godot.zip -d godot_bin
+          mv "godot_bin/Godot_v${GODOT_VERSION}-stable_win64.exe" godot_bin/godot.exe
+
+      - name: Download & install export templates
+        shell: bash
+        run: |
+          curl -L -o templates.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          mkdir -p "$APPDATA/Godot/export_templates/${GODOT_VERSION}.stable"
+          unzip -o templates.tpz -d template_extract
+          cp -r template_extract/templates/* "$APPDATA/Godot/export_templates/${GODOT_VERSION}.stable/"
+
+      - name: Import project (generates .godot cache)
+        shell: bash
+        run: |
+          ./godot_bin/godot.exe --headless --path . --import || true
+
+      - name: Export Windows build
+        shell: bash
+        run: |
+          mkdir -p build/windows
+          ./godot_bin/godot.exe --headless --path . --export-release "Windows Desktop" build/windows/${EXPORT_NAME}.exe
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\setup.iss
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VanguardRun-Setup
+          path: installer/Output/*.exe
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "Vanguard Run build ${{ github.run_number }}"
+          files: installer/Output/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
