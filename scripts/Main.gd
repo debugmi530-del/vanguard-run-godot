@@ -391,7 +391,8 @@ func _simulate_clones(delta: float) -> void:
 
 func _update_run_label() -> void:
         if run_active:
-                run_label.text = "ЗАБЕГ: В ПРОЦЕССЕ"
+                var t: float = player1.recording_time if player1 else 0.0
+                run_label.text = "ЗАБЕГ: %.1fс" % t
         else:
                 run_label.text = "ЗАБЕГ: ожидание у старта"
 
