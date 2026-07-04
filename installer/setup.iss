@@ -12,6 +12,8 @@ SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
 DisableProgramGroupPage=yes
 WizardStyle=modern
+SetupIconFile=..\icon.ico
+UninstallDisplayIcon={app}\VanguardRun.exe
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
