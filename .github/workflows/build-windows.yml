@@ -9,6 +9,9 @@ env:
   GODOT_VERSION: 4.3
   EXPORT_NAME: VanguardRun
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
