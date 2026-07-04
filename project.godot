@@ -8,9 +8,9 @@ config_version=5
 
 config/name="Vanguard Run"
 config/description="Кооперативный паркур-платформер с системой прокачки уровня для двух игроков (клавиатура + геймпад)."
-run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
+run/main_scene="res://scenes/MainMenu.tscn"
 
 [autoload]
 
@@ -20,6 +20,10 @@ GameManager="*res://scripts/GameManager.gd"
 
 window/size/viewport_width=1600
 window/size/viewport_height=900
+window/size/mode=0
+window/size/resizable=true
+window/size/borderless=false
+window/size/initial_position_type=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 
